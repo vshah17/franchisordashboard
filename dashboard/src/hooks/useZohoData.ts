@@ -109,7 +109,7 @@ export function computeKPIs(
     ? activeRows.filter((r) => r.partner === partnerFilter)
     : activeRows;
 
-  const allLocations = [...new Set(partnerRows.map((r) => r.businessName))].sort();
+  const allLocations = [...new Set(partnerRows.map((r) => r.businessName).filter(Boolean))].sort();
   const availableMonths = getAvailableMonths(partnerRows);
 
   const periodRows = filterByPeriod(partnerRows, datePeriod);
