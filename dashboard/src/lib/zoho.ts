@@ -1,8 +1,8 @@
 // Zoho Analytics v1 API — uses /api/{email}/{workspace}/{table} with ZOHO_ACTION=EXPORT
 // Proxied through Vite: /zoho-api  → https://analyticsapi.zoho.com
 //                       /zoho-oauth → https://accounts.zoho.com
-const BASE_URL = "/api/zoho-api";
-const OAUTH_URL = "/api/zoho-oauth";
+const TOKEN_URL = "/api/zoho-token";
+const DATA_URL = "/api/zoho-data";
 
 export interface ZohoEngagementRow {
   reportingMonth: string;
@@ -98,7 +98,7 @@ export async function refreshAccessToken(): Promise<string> {
     refresh_token: refreshToken,
   });
 
-  const response = await fetch(`${OAUTH_URL}/oauth/v2/token`, {
+  const response = await fetch(TOKEN_URL, {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
     body: params.toString(),
@@ -153,7 +153,7 @@ async function doFetch(token: string, partnerFilter?: string): Promise<ZohoEngag
     params.set("ZOHO_CRITERIA", `"Partner"='${partnerFilter}'`);
   }
 
-  const url = `${BASE_URL}/api/arun%40agentz.ai/Production-Workspace/Monthly%20Engagement%20Report?${params}`;
+  const url = `${DATA_URL}?${params}`;
 
   const response = await fetch(url, {
     headers: { Authorization: `Zoho-oauthtoken ${token}` },
