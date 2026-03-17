@@ -1,8 +1,8 @@
 // Zoho Analytics v1 API — uses /api/{email}/{workspace}/{table} with ZOHO_ACTION=EXPORT
 // Proxied through Vite: /zoho-api  → https://analyticsapi.zoho.com
 //                       /zoho-oauth → https://accounts.zoho.com
-const BASE_URL = "/zoho-api";
-const OAUTH_URL = "/zoho-oauth";
+const BASE_URL = "/api/zoho-api";
+const OAUTH_URL = "/api/zoho-oauth";
 
 export interface ZohoEngagementRow {
   reportingMonth: string;
