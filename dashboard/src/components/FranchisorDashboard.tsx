@@ -106,14 +106,12 @@ const FranchisorDashboard = () => {
   const [locationFilter, setLocationFilter] = useState<string>("all");
   const [datePeriod, setDatePeriod] = useState<DatePeriod>("prev-month");
   const [selectedLocation, setSelectedLocation] = useState<string | null>(null);
-  const [partnerFilter, setPartnerFilter] = useState<string>(
-    import.meta.env.VITE_ZOHO_PARTNER || "all",
-  );
+  const [partnerFilter, setPartnerFilter] = useState<string>("Agentz");
 
   const { data: zohoKPIs, isLoading } = useZohoKPIs(
     locationFilter === "all" ? undefined : locationFilter,
     datePeriod,
-    partnerFilter === "all" ? undefined : partnerFilter,
+    partnerFilter,
   );
 
   if (selectedLocation) {
@@ -144,7 +142,7 @@ const FranchisorDashboard = () => {
           <div>
             <h1 className="text-2xl font-bold text-foreground leading-tight">Franchisor Dashboard</h1>
             <p className="text-sm text-muted-foreground font-medium mt-0.5">
-              {partnerFilter === "all" ? "All Partners" : partnerFilter}
+              {partnerFilter}
             </p>
           </div>
         </div>
@@ -160,7 +158,6 @@ const FranchisorDashboard = () => {
               <SelectValue placeholder="Select Partner" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Partners</SelectItem>
               {(zohoKPIs?.partners ?? []).map((name) => (
                 <SelectItem key={name} value={name}>{name}</SelectItem>
               ))}
