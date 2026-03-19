@@ -83,25 +83,9 @@ let cachedToken: string | null = null;
 let tokenExpiry: number = 0;
 
 export async function refreshAccessToken(): Promise<string> {
-  const clientId = import.meta.env.VITE_ZOHO_CLIENT_ID as string;
-  const clientSecret = import.meta.env.VITE_ZOHO_CLIENT_SECRET as string;
-  const refreshToken = import.meta.env.VITE_ZOHO_REFRESH_TOKEN as string;
-
-  if (!clientId || !clientSecret || !refreshToken) {
-    throw new Error("Missing Zoho OAuth credentials (VITE_ZOHO_CLIENT_ID, VITE_ZOHO_CLIENT_SECRET, VITE_ZOHO_REFRESH_TOKEN)");
-  }
-
-  const params = new URLSearchParams({
-    grant_type: "refresh_token",
-    client_id: clientId,
-    client_secret: clientSecret,
-    refresh_token: refreshToken,
-  });
-
+  // Credentials are injected server-side by /api/zoho-token — nothing sensitive sent from browser
   const response = await fetch(TOKEN_URL, {
     method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: params.toString(),
   });
 
   if (!response.ok) {
@@ -124,21 +108,7 @@ async function getAccessToken(): Promise<string> {
   if (cachedToken && Date.now() < tokenExpiry) {
     return cachedToken;
   }
-
-  const clientId = import.meta.env.VITE_ZOHO_CLIENT_ID as string;
-  const clientSecret = import.meta.env.VITE_ZOHO_CLIENT_SECRET as string;
-
-  // If we have client credentials, auto-refresh
-  if (clientId && clientSecret) {
-    return refreshAccessToken();
-  }
-
-  // Fall back to the static token from .env
-  const staticToken = import.meta.env.VITE_ZOHO_ACCESS_TOKEN as string;
-  if (!staticToken) {
-    throw new Error("No Zoho access token available");
-  }
-  return staticToken;
+  return refreshAccessToken();
 }
 
 async function doFetch(token: string, partnerFilter?: string): Promise<ZohoEngagementRow[]> {
@@ -191,9 +161,7 @@ export async function fetchEngagementData(partnerFilter?: string): Promise<ZohoE
     return await doFetch(accessToken, partnerFilter);
   } catch (err) {
     // On 401-style errors, try refreshing the token once
-    const clientId = import.meta.env.VITE_ZOHO_CLIENT_ID as string;
-    const clientSecret = import.meta.env.VITE_ZOHO_CLIENT_SECRET as string;
-    if (clientId && clientSecret && String(err).includes("401")) {
+    if (String(err).includes("401")) {
       cachedToken = null;
       const newToken = await refreshAccessToken();
       return doFetch(newToken, partnerFilter);
